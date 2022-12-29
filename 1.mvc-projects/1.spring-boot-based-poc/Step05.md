@@ -1,40 +1,30 @@
-<!---
-Current Directory : /Users/rangakaranam/Ranga/git/00.courses/spring-boot-master-class/02.Spring-Boot-Web-Application-V2
--->
-
 ## Complete Code Example
-
 
 ### /pom.xml
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.0</version>
+		<version>2.5.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.in28minutes.springboot</groupId>
-	<artifactId>myfirstwebapp</artifactId>
+	<groupId>com.codewithheeren.springboot</groupId>
+	<artifactId>step05</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>myfirstwebapp</name>
+	<name>step05</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>18</java.version>
+		<java.version>8</java.version>
+		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-jasper</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -47,8 +37,11 @@ Current Directory : /Users/rangakaranam/Ranga/git/00.courses/spring-boot-master-
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -82,30 +75,32 @@ Current Directory : /Users/rangakaranam/Ranga/git/00.courses/spring-boot-master-
 ```
 ---
 
-### /src/main/java/com/in28minutes/springboot/myfirstwebapp/MyfirstwebappApplication.java
+### /src/main/java/com/codewithheeren/springboot/myfirstwebapp/Step05Application.java
 
 ```java
-package com.in28minutes.springboot.myfirstwebapp;
-
+package com.codewithheeren.springboot.myfirstwebapp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+//adding thymeleaf dependency
+//rander view page
 
 @SpringBootApplication
-public class MyfirstwebappApplication {
+@ComponentScan("com.codewithheeren")
+public class Step05Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MyfirstwebappApplication.class, args);
+		SpringApplication.run(Step05Application.class, args);
 	}
-
 }
+
 ```
 ---
 
-### /src/main/java/com/in28minutes/springboot/myfirstwebapp/hello/SayHelloController.java
+### /src/main/java/com/codewithheeren/springboot/controller/SayHelloController.java
 
 ```java
-package com.in28minutes.springboot.myfirstwebapp.hello;
-
+package com.codewithheeren.springboot.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -113,17 +108,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class SayHelloController {
 	
-	//"say-hello" => "Hello! What are you learning today?"
-	
-	//say-hello
-	// http://localhost:8080/say-hello
-	@RequestMapping("say-hello")
-	@ResponseBody
-	public String sayHello() {
-		return "Hello! What are you learning today?";
-	}
-	
-	@RequestMapping("say-hello-html")
+	@RequestMapping("firsthtml")
 	@ResponseBody
 	public String sayHelloHtml() {
 		StringBuffer sb = new StringBuffer();
@@ -139,29 +124,24 @@ public class SayHelloController {
 		return sb.toString();
 	}
 	
-	//
-	// "say-hello-jsp" => sayHello.jsp 
-	// /src/main/resources/META-INF/resources/WEB-INF/jsp/sayHello.jsp
-	// /src/main/resources/META-INF/resources/WEB-INF/jsp/welcome.jsp
-	// /src/main/resources/META-INF/resources/WEB-INF/jsp/login.jsp
-	// /src/main/resources/META-INF/resources/WEB-INF/jsp/todos.jsp
-	@RequestMapping("say-hello-jsp")
+	@RequestMapping("thymeleafpage")
 	public String sayHelloJsp() {
 		return "sayHello";
 	}
 }
+
 ```
 ---
 
-### /src/main/resources/META-INF/resources/WEB-INF/jsp/sayHello.jsp
+### /src/main/resources/templates/sayhello.html
 
 ```
 <html>
 	<head>
-		<title> My first HTML Page - JSP</title>
+		<title> My first HTML Page</title>
 	</head>
 	<body>
-		My first html page with body - JSP
+		My first html page with body and thymeleaf mappings.
 	</body>
 </html>
 ```
@@ -170,16 +150,14 @@ public class SayHelloController {
 ### /src/main/resources/application.properties
 
 ```properties
-#server.port=8081
-#sayHello.jsp
-#/WEB-INF/jsp/sayHello.jsp
-spring.mvc.view.prefix=/WEB-INF/jsp/
-spring.mvc.view.suffix=.jsp
+#spring.mvc.view.prefix=/WEB-INF/jsp/
+spring.mvc.view.suffix=.html
 logging.level.org.springframework=debug
+
 ```
 ---
 
-### /src/test/java/com/in28minutes/springboot/myfirstwebapp/MyfirstwebappApplicationTests.java
+### /src/test/java/com/codewithheeren/springboot/myfirstwebapp/Step05ApplicationTests.java
 
 ```java
 package com.in28minutes.springboot.myfirstwebapp;
@@ -188,7 +166,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MyfirstwebappApplicationTests {
+class Step05ApplicationTests {
 
 	@Test
 	void contextLoads() {
