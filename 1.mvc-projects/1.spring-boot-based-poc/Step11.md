@@ -193,6 +193,8 @@ public class AuthenticationService {
 		return isValidUserName && isValidPassword;
 	}
 }
+```
+---
 
 ### /src/main/resources/templates/sayhello.html
 
