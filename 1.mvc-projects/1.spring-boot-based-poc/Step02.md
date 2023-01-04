@@ -89,10 +89,29 @@ public class Step02Application {
 	}
 }
 
-
 ```
 ---
+### /src/main/java/com/codewithheeren/springboot/myfirstwebapp/SayHelloController.java
+```java
+package com.codewithheeren.springboot.myfirstwebapp;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class SayHelloController {
+
+	// http://localhost:8080/hello
+	@RequestMapping("/hello")
+	@ResponseBody
+	public String sayHello() {
+		return "HTTP Request from clint has been recieved!";
+	}
+
+}
+```
+---
 ### /src/main/resources/application.properties
 
 ```properties
