@@ -188,7 +188,6 @@ public class TodoController {
 	@Autowired
 	private TodoService todoService;
 		
-	
 	@RequestMapping("list-todos")
 	public String listAllTodos(ModelMap model) {
 		List<Todo> todos = todoService.findByUsername("heeren");
@@ -217,7 +216,8 @@ public class AuthenticationService {
 		return isValidUserName && isValidPassword;
 	}
 }
-
+```
+---
 ### /src/main/java/com/codewithheeren/springboot/entity/Todo.java
 
 ```java
