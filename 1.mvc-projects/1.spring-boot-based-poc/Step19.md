@@ -315,14 +315,25 @@ public class TodoService {
 package com.codewithheeren.springboot.entity;
 
 import java.time.LocalDate;
+import javax.validation.constraints.Size;
 
 public class Todo {
 
 	private int id;
 	private String username;
+
+	@Size(min=10, message="Enter atleast 10 characters")
+//	@NotNull: to say that a field must not be null.
+//	@NotEmpty: to say that a list field must not empty.
+//	@NotBlank: to say that a string field must not be the empty string (i.e. it must have at least one character).
+//	@Min and @Max: to say that a numerical field is only valid when it’s value is above or below a certain value.
+//	@Email: to say that a string field must be a valid email address.
 	private String description;
 	private LocalDate targetDate;
 	private boolean done;
+
+	public Todo() {
+	}
 
 	public Todo(int id, String username, String description, LocalDate targetDate, boolean done) {
 		super();
@@ -380,6 +391,7 @@ public class Todo {
 	}
 
 }
+
 
 ```
 ---
