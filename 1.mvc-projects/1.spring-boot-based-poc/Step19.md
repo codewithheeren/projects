@@ -167,7 +167,6 @@ public class LoginController {
 
 ```java
 package com.codewithheeren.springboot.controller;
-
 import java.time.LocalDate;
 import java.util.List;
 import javax.validation.Valid;
@@ -195,7 +194,7 @@ public class TodoController {
 		
 	@RequestMapping("list-todos")
 	public String listAllTodos(ModelMap model) {
-		List<Todo> todos = todoService.findByUsername("in28minutes");
+		List<Todo> todos = todoService.findByUsername("heeren");
 		model.addAttribute("todos", todos);
 		return "listTodos";
 	}
@@ -229,13 +228,6 @@ public class TodoController {
 		todoService.deleteById(id);
 		return "redirect:list-todos";
 		
-	}
-
-	@RequestMapping("update-todo")
-	public String showUpdateTodoPage(@RequestParam int id, ModelMap model) {
-		Todo todo = todoService.findById(id);
-		model.addAttribute("todo", todo);
-		return "todo";
 	}
 	
 }
@@ -282,7 +274,7 @@ public class TodoService {
 	static {
 		todos.add(new Todo(++todosCount, "heeren","Learn AWS", LocalDate.now().plusYears(1), false ));
 		todos.add(new Todo(++todosCount, "heeren","Learn DevOps", LocalDate.now().plusYears(2), false ));
-		todos.add(new Todo(++todosCount, "heeren","Learn Full Stack Development", LocalDate.now().plusYears(3), false));
+		todos.add(new Todo(++todosCount, "heeren","Learn Full Stack Development", LocalDate.now().plusYears(3), false ));
 	}
 	
 	public List<Todo> findByUsername(String username){
@@ -298,12 +290,6 @@ public class TodoService {
 		System.out.println("delete method invoke for id - "+id);
 		Predicate<? super Todo> predicate = todo -> todo.getId() == id;
 		todos.removeIf(predicate);
-	}
-
-	public Todo findById(int id) {
-		Predicate<? super Todo> predicate = todo -> todo.getId() == id;
-		Todo todo = todos.stream().filter(predicate).findFirst().get();
-		return todo;
 	}
 
 }
@@ -452,7 +438,6 @@ public class Todo {
 						<th>Target Date</th>
 						<th>Is Done?</th>
 						<th>Delete</th>
-						<th>Update</th>
 					</tr>
 				</thead>
 				<tbody>		
@@ -462,7 +447,6 @@ public class Todo {
 							<td th:text="${todo.targetDate}" />
 							<td th:text="${todo.done}" />
 							<td> <a th:href="@{'/delete-todo?id='+${todo.id}}" class="btn btn-warning">Delete</a>   </td>
-							<td> <a th:href="@{'/update-todo?id='+${todo.id}}" class="btn btn-success">Update</a>   </td>
 				</tr>
 				</tbody>
 			</table>
