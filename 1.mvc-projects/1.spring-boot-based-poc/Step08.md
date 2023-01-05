@@ -199,7 +199,7 @@ spring.mvc.view.suffix=.html
 ### /src/test/java/com/codewithheeren/springboot/myfirstwebapp/Step08ApplicationTests.java
 
 ```java
-package com.in28minutes.springboot.myfirstwebapp;
+package com.codewithheeren.springboot.myfirstwebapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
