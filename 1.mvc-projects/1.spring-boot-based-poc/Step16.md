@@ -34,15 +34,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>glassfish-jstl</artifactId>
-			<version>11.0.13</version>
-		</dependency>
-		<dependency>
-			<groupId>jakarta.servlet.jsp.jstl</groupId>
-			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
 			<version>5.1.3</version>
@@ -234,16 +225,16 @@ spring.mvc.view.suffix=.html
 ```
 ---
 
-### /src/test/java/com/codewithheeren/springboot/myfirstwebapp/Step11ApplicationTests.java
+### /src/test/java/com/codewithheeren/springboot/myfirstwebapp/Step16ApplicationTests.java
 
 ```java
-package com.in28minutes.springboot.myfirstwebapp;
+package com.codewithheeren.springboot.myfirstwebapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Step11ApplicationTests {
+class Step16ApplicationTests {
 
 	@Test
 	void contextLoads() {
