@@ -41,7 +41,7 @@
 ```
 ---
 
-### /src/main/java/com/codewithheeren/springboot/myfirstwebapp/Step12Application.java
+### /src/main/java/com/codewithheeren/springboot/myfirstwebapp/Step13Application.java
 
 ```java
 package com.codewithheeren.springboot.myfirstwebapp;
@@ -49,13 +49,13 @@ package com.codewithheeren.springboot.myfirstwebapp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-//adding create account/Signup page.
+//Enabling new account credentials for login.
 @SpringBootApplication
 @ComponentScan("com.codewithheeren")
-public class Step12Application {
+public class Step13Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Step12Application.class, args);
+		SpringApplication.run(Step13Application.class, args);
 	}
 }
 
@@ -87,15 +87,10 @@ public class LoginController {
 	}
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	// login?name=codewithheeren&password=password
 	public String gotoWelcomePage(@RequestParam String name, @RequestParam String password, ModelMap model) {
 
 		if (authenticationService.authenticate(name, password)) {
 			model.put("username", name);
-			// Authentication
-			// name - heeren
-			// password - 123
-
 			return "welcome";
 		}
 		return "login";
@@ -107,11 +102,10 @@ public class LoginController {
 	}
 
 	@RequestMapping(value = "signup", method = RequestMethod.POST)
-//      login?name=codewithheeren&password=password
+	// login?name=codewithheeren&password=password
 	public String userProfile(@RequestParam String username, @RequestParam String password,
 			@RequestParam String firstname, @RequestParam String lastname, ModelMap model) {
-//		System.out.println(username);
-//		System.out.println(firstname+" "+lastname);
+		authenticationService.addCredentials(username, password);
 		model.put("name", firstname + " " + lastname);
 		model.put("username", username);
 		return "welcome";
@@ -124,15 +118,28 @@ public class LoginController {
 
 ```java
 package com.codewithheeren.springboot.service;
+
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthenticationService {
-	
-	public boolean authenticate(String username, String password) {	
-		boolean isValidUserName = username.equalsIgnoreCase("heeren");
-		boolean isValidPassword = password.equalsIgnoreCase("123");		
-		return isValidUserName && isValidPassword;
+
+	private static Map<String, String> map = new HashMap<>();
+
+	public void addCredentials(String username, String password) {
+		map.put(username, password);
+	}
+
+	public boolean authenticate(String username, String password) {
+		String existingPassword = map.get(username);
+		if (existingPassword != null) {
+			boolean isValidPassword = password.equals(existingPassword);
+			if (isValidPassword)
+				return true;
+		}
+		return false;
 	}
 }
 ```
@@ -141,26 +148,25 @@ public class AuthenticationService {
 ### /src/main/resources/templates/login.html
 ```html
 <html>
-	<head>
-		<title>Login Page</title>
-		<style>
-        #link {
-             background-color: black;
- 			 color: white;
-  			 padding: 2px 10px;
-             text-decoration: none;
-        }
-    	</style>
-	</head>
-	<body>
-		Welcome to the login page!
-		<form method="post">
-			Name: <input type="text" name="name">
-			Password: <input type="password" name="password">
-			<input type="submit">
-			<a id="link" href="signup">signup</a>
-		</form>
-	</body>
+<head>
+<title>Login Page</title>
+<style>
+#link {
+	background-color: black;
+	color: white;
+	padding: 2px 10px;
+	text-decoration: none;
+}
+</style>
+</head>
+<body>
+	Welcome to the login page!
+	<form method="post">
+		Name: <input type="text" name="name"> Password: <input
+			type="password" name="password"> <input type="submit">
+		<a id="link" href="signup">signup</a>
+	</form>
+</body>
 </html>
 ```
 ---
@@ -168,14 +174,18 @@ public class AuthenticationService {
 ### /src/main/resources/templates/welcome.html
 ```html
 <html>
-	<head>
-		<title>Welcome Page</title>
-	</head>
-	<body>
-			<span th:text="'Welcome '"></span>
-			<span th:text="${name} ?: 'CodeWithHeeren'"></span>  <!-- if name will be null then default value will be CodeWithHeeren -->
-			<div th:text="'Your Username: '+${username}"></div>
-	</body>
+<head>
+<title>Welcome Page</title>
+</head>
+<body>
+	<span th:text="'Welcome '"></span>
+	<span th:text="${name} ?: 'To Your Profile Page'"></span>
+	<!-- if name will be null then default value will be CodeWithHeeren -->
+	<a href="/login"> <input type="button" style="float: right;"
+		value="logout" />
+	</a>
+	<div th:text="'Your Username: '+${username}"></div>
+</body>
 </html>
 ```
 ---
@@ -188,6 +198,7 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Full-width input fields */
 input[type=text], input[type=password] {
 	width: 100%;
 	padding: 15px;
@@ -202,6 +213,7 @@ input[type=text]:focus, input[type=password]:focus {
 	outline: none;
 }
 
+/* Set a style for all buttons */
 button {
 	background-color: #04AA6D;
 	color: white;
@@ -217,16 +229,19 @@ button:hover {
 	opacity: 1;
 }
 
+/* Float cancel and signup buttons and add an equal width */
 .signupbtn {
 	float: left;
 	width: 10%;
 }
 
+/* Add padding to container elements */
 .container {
 	padding: 16px;
 }
 </style>
 <body>
+
 	<form method="post" action="/signup">
 		<div class="container">
 			<h1>Sign Up</h1>
@@ -248,26 +263,8 @@ button:hover {
 
 ```properties
 spring.mvc.view.suffix = .html
-#logging.level.org.springframework = debug
+logging.level.org.springframework = debug
 
 ```
 ---
 
-### /src/test/java/com/codewithheeren/springboot/myfirstwebapp/Step11ApplicationTests.java
-
-```java
-package com.codewithheeren.springboot.myfirstwebapp;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class Step11ApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
-}
-```
----
