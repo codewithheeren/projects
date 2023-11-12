@@ -173,7 +173,6 @@ public class AuthenticationService {
 
 ### /src/main/resources/templates/login.html
 ```html
-```
 <html>
 	<head>
 		<title>Login Page</title>
@@ -201,7 +200,6 @@ public class AuthenticationService {
 
 ### /src/main/resources/templates/welcome.html
 ```html
-```
 <html>
 	<head>
 		<title>Welcome Page</title>
@@ -216,7 +214,6 @@ public class AuthenticationService {
 ---
 ### /src/main/resources/templates/signup.html
 ```html
-```
 <!DOCTYPE html>
 <html>
 <style>
@@ -283,8 +280,8 @@ button:hover {
 ### /src/main/resources/application.properties
 
 ```properties
-spring.mvc.view.suffix=.html
-#logging.level.org.springframework=debug
+spring.mvc.view.suffix = .html
+#logging.level.org.springframework = debug
 
 ```
 ---
