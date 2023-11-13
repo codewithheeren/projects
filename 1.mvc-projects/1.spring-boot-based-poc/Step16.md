@@ -3,26 +3,7 @@
 ### /pom.xml
 
 ```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.5.3</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>com.codewithheeren.springboot</groupId>
-	<artifactId>springmvcproject</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>springmvcproject</name>
-	<description>Demo project for Spring Boot</description>
-	<properties>
-		<java.version>8</java.version>
-		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
-	</properties>
-	<dependencies>
+<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -32,6 +13,10 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
@@ -44,6 +29,10 @@
 			<version>3.6.0</version>
 		</dependency>
 		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>webjars-locator-core</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
@@ -52,37 +41,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-	<repositories>
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
-
-</project>
+</dependencies>
 ```
 ---
 
@@ -94,8 +53,9 @@ package com.codewithheeren.springboot.myfirstwebapp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-
-//Generating Error message on wrong credentials insertion.
+//Assignment - create profile page with good look and feel.
+//adding more validations in User entity class.
+//add todo link in profile page.
 @SpringBootApplication
 @ComponentScan("com.codewithheeren")
 public class Step16Application {
@@ -105,7 +65,6 @@ public class Step16Application {
 	}
 }
 
-
 ```
 ---
 
@@ -113,133 +72,305 @@ public class Step16Application {
 
 ```java
 package com.codewithheeren.springboot.controller;
+
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
-
-import com.codewithheeren.springboot.service.AuthenticationService;
+import com.codewithheeren.springboot.entity.User;
+import com.codewithheeren.springboot.service.UserService;
 
 @Controller
-@SessionAttributes("name")
 public class LoginController {
-	
-	@Autowired
-	private AuthenticationService authenticationService;
-	
 
-	@RequestMapping(value="login",method = RequestMethod.GET)
+	@Autowired
+	private UserService userService;
+
+	@RequestMapping(value = "login", method = RequestMethod.GET)
 	public String gotoLoginPage() {
 		return "login";
 	}
 
-	@RequestMapping(value="login",method = RequestMethod.POST)
-	public String gotoWelcomePage(@RequestParam String name, 
-			@RequestParam String password, ModelMap model) {
-		
-		if(authenticationService.authenticate(name, password)) {
-		
-			model.put("name", name);
-			//Authentication 
-			//name - heeren	
-			//password - password
-			
-			return "welcome";
+	@RequestMapping(value = "login", method = RequestMethod.POST)
+	public String gotoWelcomePage(@RequestParam String username, @RequestParam String password, ModelMap model) {
+
+		if (userService.authenticate(username, password)) {
+			model.put("user", userService.getUser(username));
+			return "profile";
 		}
-		
 		model.put("errorMessage", "Invalid Credentials! Please try again.");
 		return "login";
 	}
-}
 
+	@RequestMapping(value = "signup", method = RequestMethod.GET)
+	public String gotoSignUpPage(ModelMap model) {
+		// -----------------------Don't forget to add this user object--------------------------
+		model.put("user", new User());
+		return "signup";
+	}
+
+	@RequestMapping(value = "signup", method = RequestMethod.POST) 
+	// Note- always put binding result object just after pojo object.
+	public String userProfile(@Valid @ModelAttribute("user") User user, BindingResult result, ModelMap model) {
+		model.put("user", user);
+		if (result.hasErrors()) {
+			return "signup";
+		}
+		userService.addUser(user);
+		return "profile";
+	}
+
+}
 ```
 ---
 
-### /src/main/java/com/codewithheeren/springboot/service/AuthenticationService.java
-
+### /src/main/java/com/codewithheeren/springboot/entity/User.java
 ```java
-package com.codewithheeren.springboot.service;
-import org.springframework.stereotype.Service;
+package com.codewithheeren.springboot.entity;
 
-@Service
-public class AuthenticationService {
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+public class User {
 	
-	public boolean authenticate(String username, String password) {
-		
-		boolean isValidUserName = username.equalsIgnoreCase("heeren");
-		boolean isValidPassword = password.equalsIgnoreCase("123");		
-		return isValidUserName && isValidPassword;
+	@Email(message="Username must be valid email.")
+	@NotEmpty(message="Username can not be empty")
+	private String username;
+	
+	@Size(min=8, message="Password must be minimum 8 characters")
+	@Size(max=15, message="Password must not be more then 15 characters")
+	private String password;
+	
+	@NotEmpty(message="Firstname must not empty")
+	@NotBlank(message="Firstname must have at least one character")
+	@Pattern(regexp="^(?=.{1,40}$)[a-zA-Z]+(?:[-'\\s][a-zA-Z]+)*$",message="Firstname must not contain any number")
+	private String firstname;
+	
+	@NotEmpty(message="Lastname must not empty")
+	@NotBlank(message="Lastname must have at least one character")
+	@Pattern(regexp="^(?=.{1,40}$)[a-zA-Z]+(?:[-'\\s][a-zA-Z]+)*$",message="Firstname must not contain any number")
+	private String lastname;
+	
+	@Min(message="Age must be minimum 18 yrs", value = 18)
+	@Max(message="Age must not be more then 50 yrs", value = 50)
+	private int age;
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	@Override
+	public String toString() {
+		return "User [username=" + username + ", password=" + password + ", firstname=" + firstname + ", lastname="
+				+ lastname + ", age=" + age + "]";
 	}
 }
 
 ```
 ---
+### /src/main/java/com/codewithheeren/springboot/service/UserService.java
 
+```java
+package com.codewithheeren.springboot.service;
+
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.stereotype.Service;
+import com.codewithheeren.springboot.entity.User;
+
+@Service
+public class UserService {
+	private static Map<String, User> users = new HashMap<>();
+
+	public void addUser(User user) {
+		users.put(user.getUsername(), user);
+	}
+	
+	public User getUser(String username) {
+		return users.get(username);
+	}
+
+	public boolean authenticate(String username, String password) {
+		User existingUser = users.get(username);
+		if (existingUser != null) {
+			boolean isValidPassword = password.equals(existingUser.getPassword());
+			if (isValidPassword)
+				return true;
+		}
+		return false;
+	}
+}
+```
+---
 ### /src/main/resources/templates/login.html
-
+```html
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Login Page</title>
+<style>
+#link {
+	background-color: black;
+	color: white;
+	padding: 2px 10px;
+	text-decoration: none;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		Welcome to the login page!
+		<form method="post">
+			Name: <input type="text" name="username"> Password: <input
+				type="password" name="password"> <input type="submit">
+			<a id="link" href="signup">signup</a>
+			<pre th:text="${errorMessage}" style="color: red;"></pre>
+		</form>
+	</div>
+</body>
+</html>
 ```
-<html>
-	<head>
-		<title>Login Page</title>
-	</head>
-	<body>	
-		<div class="container">
-			<h1>Login</h1>
-			<pre th:text="${errorMessage}" />
-			<form method="post">
-				Name: <input type="text" name="name">
-				Password: <input type="password" name="password">
-				<input type="submit">
-			</form>
+---
+
+### /src/main/resources/templates/profile.html
+```html
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Profile Page</title>
+</head>
+<body>
+	<span th:text="'Welcome '+${user.firstname}+' '+${user.lastname}"></span>
+	<a href="/login"> <input type="button" style="float: right;"
+		value="logout" />
+	</a>
+	<div th:text="'Your firstname: '+${user.firstname}"></div>
+	<div th:text="'Your lastname: '+${user.lastname}"></div>
+	<div th:text="'Your username: '+${user.username}"></div>
+</body>
+</html>
+```
+---
+### /src/main/resources/templates/signup.html
+```html
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<link href="webjars/bootstrap/5.1.3/css/bootstrap.min.css"
+	rel="stylesheet">
+<title>SignUp</title>
+</head>
+<body class="h-100">
+	<div class="container h-100">
+		<div class="row h-100 justify-content-center align-items-center">
+			<div class="col-10 col-md-8 col-lg-4">
+				<!-- Form Starts-->
+				<form method="post" th:action="@{/signup}" th:object="${user}">
+					<h1 class="text-center">Sign Up</h1>
+
+					<div class="form-group">
+						<label for="email">Username</label> <input type="email"
+							class="form-control" th:field="*{username}"
+							placeholder="Enter email">
+						<div class="text-warning"
+							th:each="e : ${#fields.errors('username')}" th:text="${e}"></div>
+					</div>
+
+					<div class="form-group">
+						<label for="password">Password</label> <input type="password"
+							class="form-control" th:field="*{password}"
+							placeholder="Enter password">
+						<div class="text-warning" th:if="${#fields.hasErrors('password')}"
+							th:errors="*{password}"></div>
+					</div>
+
+					<div class="form-group">
+						<label for="firstname">FirstName:</label> <input type="text"
+							class="form-control" placeholder="Firstname..."
+							th:field="*{firstname}">
+						<div class="text-warning"
+							th:if="${#fields.hasErrors('firstname')}"
+							th:errors="*{firstname}"></div>
+					</div>
+
+					<div class="form-group">
+						<label for="firstname">LastName:</label> <input type="text"
+							class="form-control" placeholder="Lastname..."
+							th:field="*{lastname}">
+						<div class="text-warning" th:if="${#fields.hasErrors('lastname')}"
+							th:errors="*{lastname}"></div>
+					</div>
+
+					<div class="form-group">
+						<label for="age">Age:</label> <input type="text"
+							class="form-control" placeholder="Age In Years..."
+							th:field="*{age}">
+						<div class="text-warning" th:if="${#fields.hasErrors('age')}"
+							th:errors="*{age}"></div>
+					</div>
+
+
+					<button type="submit" class="btn btn-primary btn-customized mt-4">Signup</button>
+				</form>
+				<!-- Form end -->
+			</div>
 		</div>
-	</body>
+	</div>
+	<script src="webjars/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+	<script src="webjars/jquery/3.6.0/jquery.min.js"></script>
+</body>
 </html>
 ```
 ---
-
-### /src/main/resources/templates/welcome.html
-
-```
-<html>
-	<head>
-		<title>Welcome Page</title>
-	</head>
-	<body>
-			<div>Welcome to Codewithheeren</div>
-			<div th:text="'Your Name '+${name}"></div>
-	</body>
-</html>
-```
----
-
 
 ### /src/main/resources/application.properties
 
 ```properties
-spring.mvc.view.suffix=.html
-#logging.level.org.springframework=debug
+spring.mvc.view.suffix = .html
+logging.level.org.springframework = debug
 
-```
----
-
-### /src/test/java/com/codewithheeren/springboot/myfirstwebapp/Step16ApplicationTests.java
-
-```java
-package com.codewithheeren.springboot.myfirstwebapp;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class Step16ApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
-}
 ```
 ---
