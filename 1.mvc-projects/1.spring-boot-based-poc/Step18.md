@@ -60,7 +60,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-//add todo option added.
+//Todo option added.
 @SpringBootApplication
 @ComponentScan("com.codewithheeren")
 public class Step18Application {
