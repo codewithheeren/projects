@@ -702,8 +702,9 @@ public class TodoService {
 ### /src/main/resources/application.properties
 
 ```properties
-spring.mvc.view.suffix = .html
-logging.level.org.springframework = info
-logging.level.com.codewithheeren.springboot.myfirstwebapp = info
+spring.mvc.view.suffix=.html
+logging.level.org.springframework=info
+logging.level.com.codewithheeren.springboot.myfirstwebapp=info
+spring.mvc.format.date=yyyy-MM-dd
 ```
 ---
