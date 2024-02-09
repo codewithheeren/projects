@@ -245,7 +245,7 @@ public class UserService {
 ---
 ### /src/main/resources/templates/login.html
 ```html
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <title>Login Page</title>
 <style>
@@ -259,10 +259,11 @@ public class UserService {
 </head>
 <body>
 	Welcome to the login page!
-	<form method="post">
+	<form method="post" th:action="@{/login}">
 		Name: <input type="text" name="username"> Password: <input
 			type="password" name="password"> <input type="submit">
 		<a id="link" href="signup">signup</a>
+		<pre th:text="${errorMessage}" style="color: red;"></pre>
 	</form>
 </body>
 </html>
